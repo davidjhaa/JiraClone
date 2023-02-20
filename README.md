@@ -5,4 +5,4 @@ This is a project of JIRA clone for software progress tracking.
 1. HTML
 2. CSS
 3. JavaScript
-4. JS DOM
+4. JS DOM   
