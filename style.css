@@ -6,3 +6,58 @@ body {
     margin: 0;
     padding: 0;
 }
+.toolbox-cont{
+    height : 6rem;
+    background-color: #d1a3a3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toolbox-color-cont{
+    height: 4rem;
+    width : 18rem;
+    background-color: #f6efef;
+    /* margin-left: 35; */
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+.color{
+    height : 2rem;
+    width: 3rem;
+    display: flex;
+}
+
+.lightpink{
+  background-color: lightpink;
+}
+.lightgreen{
+  background-color: lightgreen;
+}
+.lightblue{
+  background-color: lightblue;
+}
+.black{
+  background-color: black;
+}
+
+.action-btn-cont{
+  height: 4rem;
+  width: 7rem;
+  background-color: #f19393;
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.action-btn-cont>*{
+  font-size: 2rem;
+  color: #d1d8e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  height: 100%;
+}
