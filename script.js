@@ -1,10 +1,16 @@
+let uid = new ShortUniqueId();
+
 let colors = ["lightpink", "lightgreen", "lightblue", "black"];
 const addBtn = document.querySelector(".add-btn");
 const modalCont = document.querySelector(".modal-cont");
 let modalPriorityColor = colors[colors.length - 1];
 let textAreaCont = document.querySelector(".textarea-cont");
-const mainCont = document.querySelector(".main-cont")
+const mainCont = document.querySelector(".main-cont");
+const allPriorityColors = document.querySelectorAll(".priority-color");
+let toolBoxcolors = document.querySelectorAll(".color");
+let ticketsArr = [];
 
+// to open and close modal conatiner
 let isModalPresent = false;
 addBtn.addEventListener('click',function(){
     if(!isModalPresent){
@@ -16,8 +22,7 @@ addBtn.addEventListener('click',function(){
     isModalPresent = !isModalPresent;
 })
 
-const allPriorityColors = document.querySelectorAll(".priority-color");
-
+//to remove and add active class from each priority color of modal container
 allPriorityColors.forEach(function(colorElement){
     colorElement.addEventListener("click",function(){
         allPriorityColors.forEach(function (priorityColorElem) { //this line will check every prioritycolor element and whichever contain active class it will remove from there
@@ -28,6 +33,7 @@ allPriorityColors.forEach(function(colorElement){
     })
 });
 
+// to create and display ticket
 modalCont.addEventListener("keydown", function(e){
     let key = e.key;
     if(key == "Shift"){
@@ -40,14 +46,67 @@ modalCont.addEventListener("keydown", function(e){
     }
 });
 
-function createTicket(ticketColor, data){
+// function to create new ticket
+function createTicket(ticketColor, data, ticketId){
+    let id = ticketId || uid();
     let ticketCont = document.createElement("div");  //<div><\div>
     ticketCont.setAttribute("class","ticket-cont");
     ticketCont.innerHTML = `
         <div class="ticket-color ${ticketColor} "></div>
-        <div class="ticket-id"></div>
+        <div class="ticket-id">${id}</div>
         <div class="task-area">${data}</div>
         </div>
     `
     mainCont.appendChild(ticketCont);
+
+    //if ticket is being created for the first time , then ticketId would be undefined
+    if(!ticketId){
+        ticketsArr.push( {ticketColor, data, ticketid: id} );
+        localStorage.setItem("tickets", JSON.stringify(ticketsArr));
+    }
+}
+
+// get all ticket from local storage and display on browser
+if(localStorage.getItem("tickets")){
+    ticketsArr = JSON.parse(localStorage.getItem("tickets"));
+    ticketsArr.forEach(function(ticketObj){
+        createTicket(ticketObj.ticketColor, ticketObj.data, ticketObj.ticketId);
+    })
+};
+
+// filter tickets on the basis of ticketcolor
+for(let i = 0; i < toolBoxcolors.length; i++){
+    toolBoxcolors[i].addEventListener("click", function(){
+        let currToolBoxColor = toolBoxcolors[i].classList[0];
+
+        let filteredTickets = ticketsArr.filter(function (ticketObj) {
+            return currToolBoxColor == ticketObj.ticketColor;
+        });
+
+        // to remove all the tickets
+        let allTickets = document.querySelectorAll(".ticket-cont");
+        for(let i = 0; i < allTickets.length; i++){
+            allTickets[i].remove();
+        }
+
+        // display filtered tickets
+        filteredTickets.forEach( function(ticketObj){
+            createTicket(ticketObj.ticketColor, ticketObj.data, ticketObj.ticketId);
+        })
+    })
+
+    //to display all the tickets of all colors on double clicking
+    toolBoxColors[i].addEventListener("dblclick", function () {
+      
+        //remove all the color specific tickets
+        let allTickets = document.querySelectorAll(".ticket-cont");
+        for (let i = 0; i < allTickets.length; i++) {
+            allTickets[i].remove();
+        }
+
+      //display all Tickets
+      ticketsArr.forEach(function (ticketObj) {
+        createTicket(ticketObj.ticketColor, ticketObj.data, ticketObj.ticketId);
+      });
+    });
 }
