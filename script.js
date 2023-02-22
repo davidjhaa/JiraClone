@@ -7,7 +7,9 @@ let modalPriorityColor = colors[colors.length - 1];
 let textAreaCont = document.querySelector(".textarea-cont");
 const mainCont = document.querySelector(".main-cont");
 const allPriorityColors = document.querySelectorAll(".priority-color");
-let toolBoxcolors = document.querySelectorAll(".color");
+let toolBoxColors = document.querySelectorAll(".color");
+let ticketCont = document.querySelectorAll(".ticket-cont");
+let removeBtn = document.querySelector(".remove-btn")
 let ticketsArr = [];
 
 // to open and close modal conatiner
@@ -43,6 +45,9 @@ modalCont.addEventListener("keydown", function(e){
         modalCont.style.display = "none";
         isModalPresent = false;
         textAreaCont.value = "";
+        allPriorityColors.forEach(function (colorElem) {
+            colorElem.classList.remove("active");
+        });
     }
 });
 
@@ -56,12 +61,24 @@ function createTicket(ticketColor, data, ticketId){
         <div class="ticket-id">${id}</div>
         <div class="task-area">${data}</div>
         </div>
-    `
+    `;
     mainCont.appendChild(ticketCont);
 
+    // attaching event listener to all ticket conatainer as soon as it is created
+    handleRemoval(ticketCont, id);
+
+    // attaching event listener to change priority of
+    handleColor(ticketCont, id);
+
     //if ticket is being created for the first time , then ticketId would be undefined
-    if(!ticketId){
-        ticketsArr.push( {ticketColor, data, ticketid: id} );
+        if (!ticketId) {
+        ticketsArr.push(
+            {
+                ticketColor,
+                data,
+                ticketId: id
+            }
+        );
         localStorage.setItem("tickets", JSON.stringify(ticketsArr));
     }
 }
@@ -72,15 +89,17 @@ if(localStorage.getItem("tickets")){
     ticketsArr.forEach(function(ticketObj){
         createTicket(ticketObj.ticketColor, ticketObj.data, ticketObj.ticketId);
     })
-};
+}
 
 // filter tickets on the basis of ticketcolor
-for(let i = 0; i < toolBoxcolors.length; i++){
-    toolBoxcolors[i].addEventListener("click", function(){
-        let currToolBoxColor = toolBoxcolors[i].classList[0];
+for(let i = 0; i < toolBoxColors.length; i++){
+    toolBoxColors[i].addEventListener("click", function(){
+        let currToolBoxColor = toolBoxColors[i].classList[0];
 
         let filteredTickets = ticketsArr.filter(function (ticketObj) {
-            return currToolBoxColor == ticketObj.ticketColor;
+            if (currToolBoxColor == ticketObj.ticketColor) 
+                return ticketObj;
+            // return currToolBoxColor == ticketObj.ticketColor;
         });
 
         // to remove all the tickets
@@ -95,18 +114,87 @@ for(let i = 0; i < toolBoxcolors.length; i++){
         })
     })
 
-    //to display all the tickets of all colors on double clicking
+    // to display all the tickets of all colors on double clicking
     toolBoxColors[i].addEventListener("dblclick", function () {
       
-        //remove all the color specific tickets
+        // remove all the color specific tickets
         let allTickets = document.querySelectorAll(".ticket-cont");
         for (let i = 0; i < allTickets.length; i++) {
             allTickets[i].remove();
         }
 
-      //display all Tickets
+    //   display all Tickets
       ticketsArr.forEach(function (ticketObj) {
         createTicket(ticketObj.ticketColor, ticketObj.data, ticketObj.ticketId);
       });
     });
 }
+
+// on clicking remove btn make it red and make it white on again clicking on it
+let removeBtnActive = false;
+removeBtn.addEventListener("click", function(){
+    if(removeBtnActive){
+        removeBtn.style.color = "white";
+    }
+    else{
+        removeBtn.style.color = "red";
+    }
+    removeBtnActive = !removeBtnActive;
+})
+
+// remove ticket from local store and UI
+function handleRemoval(ticket, id){
+    ticket.addEventListener("click", function(){
+        if(!removeBtnActive) return;
+
+        //local storage se removal
+        // ->get idx of the ticket to be deleted 
+        let idx = getTicketIdx(id);
+        // ->delete from ticketsArr (which was created globally)
+        ticketsArr.splice(idx, 1);  //first arg kahan se delte karna h and 2nd arg kitna delete karna h
+
+        // remove from browser storage and update local storage
+        localStorage.setItem("tickets", JSON.stringify(ticketsArr));
+
+        // finally remove from frontend
+        ticket.remove();
+    });
+}
+
+// return index of ticket is to be deleted
+function getTicketIdx(id){
+    let ticketIdx = ticketsArr.findIndex(function(ticketObj){
+        return ticketObj.ticketId == id;
+    });
+    return ticketIdx;
+}
+
+// change priority of color of any ticket container
+function handleColor(ticket, id){
+    let ticketColorStrip = ticket.querySelector(".ticket-color");
+
+    ticket.addEventListener("click", function(){
+        let currTicketColor = ticketColorStrip.classList[1];
+        // ["lightpink", "lightgreen", "lightblue", "black"]
+        let currTicketColorIdx = colors.indexOf(currTicketColor);
+
+        let newTicketColorIdx = currTicketColorIdx+1;
+        newTicketColorIdx = newTicketColorIdx % 4;
+
+        let newTicketColor = colors[newTicketColorIdx];
+
+        ticketColorStrip.classList.remove(currTicketColor);
+        ticketColorStrip.classList.add(newTicketColor);
+
+        // local storage me update 
+        let ticketIdx = getTicketIdx(id);
+        ticketsArr[ticketIdx].ticketColor = newTicketColor;
+        localStorage.setItem("tickets", JSON.stringify(ticketsArr));
+    })
+}
+
+
+
+
+
+
