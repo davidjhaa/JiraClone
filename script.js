@@ -60,6 +60,8 @@ function createTicket(ticketColor, data, ticketId){
         <div class="ticket-color ${ticketColor} "></div>
         <div class="ticket-id">${id}</div>
         <div class="task-area">${data}</div>
+        <div class="ticket-lock">
+          <i class="fa-solid fa-lock"></i>
         </div>
     `;
     mainCont.appendChild(ticketCont);
@@ -69,6 +71,9 @@ function createTicket(ticketColor, data, ticketId){
 
     // attaching event listener to change priority of
     handleColor(ticketCont, id);
+
+    // handleLock function
+    handleLock(ticketCont, id);
 
     //if ticket is being created for the first time , then ticketId would be undefined
         if (!ticketId) {
@@ -191,6 +196,35 @@ function handleColor(ticket, id){
         ticketsArr[ticketIdx].ticketColor = newTicketColor;
         localStorage.setItem("tickets", JSON.stringify(ticketsArr));
     })
+}
+
+// function to dd lock and unlock button to make content of ticket editable
+function handleLock(ticket, id){
+    //icons ko append in ticket
+  
+    let ticketLockEle = ticket.querySelector(".ticket-lock");
+    let ticketLock = ticketLockEle.children[0];
+    let ticketTaskArea = ticket.querySelector(".task-area");
+    // console.log(ticketLock);
+
+    //toggle of icons and contenteditable property
+    ticketLock.addEventListener("click", function () {
+        let ticketIdx = getTicketIdx(id);
+        if (ticketLock.classList.contains(lockClass)) {
+        ticketLock.classList.remove(lockClass);
+        ticketLock.classList.add(unlockClass);
+        ticketTaskArea.setAttribute("contenteditable", "true");
+        }
+        else { //if lock is open
+        ticketLock.classList.remove(unlockClass);
+        ticketLock.classList.add(lockClass);
+        ticketTaskArea.setAttribute("contenteditable", "false");
+        }
+
+        ticketsArr[ticketIdx].data = ticketTaskArea.innerText;
+        localStorage.setItem("tickets", JSON.stringify(ticketsArr));
+    });
+
 }
 
 

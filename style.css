@@ -126,8 +126,20 @@ textarea{
     overflow-wrap: break-word;
 }
 
+.ticket-lock{
+  font-size: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  height:2rem;
+  margin-top: -29px;
+  margin-right: 11px;
+}
 
 
 .main-cont{
-    display: flex;
+    display: flex;gap:2rem;
+    gap : 2rem;
+    justify-content: center;
+    padding: 2rem;
+    flex-wrap: wrap;
 }
