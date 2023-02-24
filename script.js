@@ -12,6 +12,9 @@ let ticketCont = document.querySelectorAll(".ticket-cont");
 let removeBtn = document.querySelector(".remove-btn")
 let ticketsArr = [];
 
+let lockClass = "fa-lock";
+let unlockClass = "fa-lock-open";
+
 // to open and close modal conatiner
 let isModalPresent = false;
 addBtn.addEventListener('click',function(){
@@ -35,7 +38,7 @@ allPriorityColors.forEach(function(colorElement){
     })
 });
 
-// to create and display ticket
+// to create and display ticket when shift key is pressed
 modalCont.addEventListener("keydown", function(e){
     let key = e.key;
     if(key == "Shift"){
@@ -65,14 +68,8 @@ function createTicket(ticketColor, data, ticketId){
         </div>
     `;
     mainCont.appendChild(ticketCont);
-
-    // attaching event listener to all ticket conatainer as soon as it is created
     handleRemoval(ticketCont, id);
-
-    // attaching event listener to change priority of
     handleColor(ticketCont, id);
-
-    // handleLock function
     handleLock(ticketCont, id);
 
     //if ticket is being created for the first time , then ticketId would be undefined
@@ -178,7 +175,7 @@ function getTicketIdx(id){
 function handleColor(ticket, id){
     let ticketColorStrip = ticket.querySelector(".ticket-color");
 
-    ticket.addEventListener("click", function(){
+    ticketColorStrip.addEventListener("click", function(){
         let currTicketColor = ticketColorStrip.classList[1];
         // ["lightpink", "lightgreen", "lightblue", "black"]
         let currTicketColorIdx = colors.indexOf(currTicketColor);
